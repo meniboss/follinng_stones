@@ -6,6 +6,7 @@ from shape import Shape
 class Game:
 
 
+
     def __init__(self):
         pygame.init()
         self.clock = pygame.time.Clock()
@@ -32,12 +33,7 @@ class Game:
 
         self.running = True
 
-        
 
-
-
-
-    # stone = pygame.Rect(self.bord_x + self.bord_width // 2, self.bord_y, 40, 40)
     def create_new_stone(self):
         shapes =[
             [
@@ -60,7 +56,9 @@ class Game:
             ]
         ]
 
+
         blocks = random.choice(shapes)
+
 
         return Shape(
             self.bord_x + self.bord_width // 2,
@@ -90,13 +88,10 @@ class Game:
             current_time = pygame.time.get_ticks()
     
             self.screen.fill((30,30,30))
-    
-            # square.draw(self.screen)
-            # l_shape.draw(self.screen)
+
             self.stone.draw(self.screen)
             for block in self.blocks:
                 pygame.draw.rect(self.screen, (200,200,200), block)
-            # pygame.draw.rect(self.screen,(200,200,200), stone)
     
             pygame.draw.rect(self.screen,(230,230,230),self.top)
             pygame.draw.rect(self.screen,(230,230,230),self.bottom)
@@ -105,15 +100,11 @@ class Game:
     
             pygame.display.flip()
     
-            keys = pygame.key.get_pressed()
-    
-    
             for event in pygame.event.get():
     
                 if event.type == pygame.QUIT:
                     self.running = False
 
-    
                 if event.type == KEYDOWN:
     
                     if event.key == pygame.K_RIGHT:
@@ -133,14 +124,11 @@ class Game:
                         self.paused = not self.paused
                         self.last_move = current_time - self.last_move
 
-
             if current_time - self.last_move >= 700\
                     and not self.paused:
 
-
                 if self.cen_move(0,40):
                     self.stone.y += 40
-
 
                 else:
                     for x,y in self.stone.stones:
