@@ -1,116 +1,161 @@
+import random
 import pygame
 from pygame.constants import KEYDOWN
+from shape import Shape
 
-pygame.init()
-
-clock = pygame.time.Clock()
-
-screen = pygame.display.set_mode((600,800))
-
-bord_width = 400
-bord_height = 600
-border = 20
-paused = False
-
-bord_x = (screen.get_width() - bord_width) // 2
-bord_y = (screen.get_height()- bord_height) // 2
-
-stone = pygame.Rect(bord_x + bord_width // 2, bord_y, 40, 40)
-
-def create_new_stone():
-    return pygame.Rect(bord_x + 200, bord_y, 40, 40)
+class Game:
 
 
-blocks = []
+    def __init__(self):
+        pygame.init()
+        self.clock = pygame.time.Clock()
+        self.last_move = pygame.time.get_ticks()
+
+        self.screen = pygame.display.set_mode((600, 800))
+
+        self.bord_width = 400
+        self.bord_height = 600
+        self.border = 20
+
+        self.paused = False
+
+        self.bord_x = (self.screen.get_width() - self.bord_width) // 2
+        self.bord_y = (self.screen.get_height()- self.bord_height) // 2
+        
+        self.top = pygame.Rect(self.bord_x, self.bord_y - self.border, self.bord_width, self.border)
+        self.bottom = pygame.Rect(self.bord_x, self.bord_y + self.bord_height, self.bord_width, self.border)
+        self.left = pygame.Rect(self.bord_x - self.border, self.bord_y, self.border, self.bord_height)
+        self.right = pygame.Rect(self.bord_x + self.bord_width, self.bord_y, self.border, self.bord_height)
+        
+        self.blocks = []
+        self.stone = self.create_new_stone()
+
+        self.running = True
+
+        
 
 
-top = pygame.Rect(bord_x, bord_y - border, bord_width, border)
-bottom = pygame.Rect(bord_x, bord_y + bord_height, bord_width, border)
-left = pygame.Rect(bord_x - border, bord_y,border, bord_height)
-right = pygame.Rect(bord_x + bord_width, bord_y, border, bord_height)
-
-last_move = pygame.time.get_ticks()
-
-running = True
-
-while running:
-    current_time = pygame.time.get_ticks()
-
-    screen.fill((30,30,30))
-
-    for block in blocks:
-        pygame.draw.rect(screen, (200,200,200), block)
-    pygame.draw.rect(screen,(200,200,200), stone)
-
-    pygame.draw.rect(screen,(230,230,230),top)
-    pygame.draw.rect(screen,(230,230,230),bottom)
-    pygame.draw.rect(screen,(230,230,230),left)
-    pygame.draw.rect(screen,(230,230,230),right)
-
-    pygame.display.flip()
-
-    keys = pygame.key.get_pressed()
 
 
-    for event in pygame.event.get():
+    # stone = pygame.Rect(self.bord_x + self.bord_width // 2, self.bord_y, 40, 40)
+    def create_new_stone(self):
+        shapes =[
+            [
+                (-1,0),
+                (-1,1),
+                (0,0),
+                (0,1)
+            ],
+            [
+                (-1,0),
+                (-1,1),
+                (-1,2),
+                (0,2)
+            ],
+            [
+                (-1, 0),
+                (-1, 1),
+                (-1, 2),
+                (0, 1)
+            ]
+        ]
 
-        if event.type == pygame.QUIT:
-            running = False
-            print(blocks)
+        blocks = random.choice(shapes)
 
-        if event.type == KEYDOWN:
+        return Shape(
+            self.bord_x + self.bord_width // 2,
+            self.bord_y,
+            blocks
+        )
 
-            if event.key == pygame.K_RIGHT:
-                next_pos = stone.move(40,0)
+    def cen_move(self,dx,dy):
+        for x, y in self.stone.stones:
+            next_pos = pygame.Rect(
+                self.stone.x + x *  + dx,
+                self.stone.y + y * 40 + dy,
+                40,
+                40
+            )
 
-                if not next_pos.colliderect(right)\
-                        and not any(next_pos.colliderect(block) for block in blocks)\
-                        and not paused:
-                    stone.x += 40
-
-            if event.key == pygame.K_LEFT:
-                next_pos = stone.move(-40,0)
-
-                if not next_pos.colliderect(left)\
-                        and not any(next_pos.colliderect(block) for block in blocks)\
-                    and not paused:
-                    stone.x -= 40
-
-            if event.key == pygame.K_DOWN:
-                next_pos = stone.move(0, 40)
-
-                if not next_pos.colliderect(bottom)\
-                        and not any(next_pos.colliderect(block) for block in blocks) \
-                        and not paused:
-                    stone.y +=40
-                    last_move = current_time
-
-            if event.key == pygame.K_SPACE and not paused:
-                blocks.append(stone)
-                stone = create_new_stone()
-                last_move = current_time
-
-            if event.key == pygame.K_p:
-                paused = not paused
-                last_move = current_time - last_move
-
-    next_pos = stone.move(0, 40)
-    if current_time - last_move >= 700 \
-            and not paused:
-
-
-        if not next_pos.colliderect(bottom)\
-                and not any(next_pos.colliderect(block) for block in blocks):
-            stone.y += 40
+            if (next_pos.colliderect(self.left) or
+                    next_pos.colliderect(self.right) or
+                    next_pos.colliderect(self.bottom) or
+                    any(next_pos.colliderect(block) for block in self.blocks)):
+                return False
+        return True
 
 
-        else:
-            blocks.append(stone)
-            stone = create_new_stone()
+    def run(self):
+        while self.running:
+            current_time = pygame.time.get_ticks()
+    
+            self.screen.fill((30,30,30))
+    
+            # square.draw(self.screen)
+            # l_shape.draw(self.screen)
+            self.stone.draw(self.screen)
+            for block in self.blocks:
+                pygame.draw.rect(self.screen, (200,200,200), block)
+            # pygame.draw.rect(self.screen,(200,200,200), stone)
+    
+            pygame.draw.rect(self.screen,(230,230,230),self.top)
+            pygame.draw.rect(self.screen,(230,230,230),self.bottom)
+            pygame.draw.rect(self.screen,(230,230,230),self.left)
+            pygame.draw.rect(self.screen,(230,230,230),self.right)
+    
+            pygame.display.flip()
+    
+            keys = pygame.key.get_pressed()
+    
+    
+            for event in pygame.event.get():
+    
+                if event.type == pygame.QUIT:
+                    self.running = False
 
-        last_move = current_time
+    
+                if event.type == KEYDOWN:
+    
+                    if event.key == pygame.K_RIGHT:
+                        if self.cen_move(40,0) and not self.paused:
+                            self.stone.x += 40
+    
+                    if event.key == pygame.K_LEFT:
+                        if self.cen_move(-40,0) and not self.paused:
+                            self.stone.x -= 40
+    
+                    if event.key == pygame.K_DOWN:
+                        if self.cen_move(0,40) and not self.paused:
+                            self.stone.y += 40
+                            self.last_move = current_time
+    
+                    if event.key == pygame.K_p:
+                        self.paused = not self.paused
+                        self.last_move = current_time - self.last_move
 
-    clock.tick(60)
+
+            if current_time - self.last_move >= 700\
+                    and not self.paused:
 
 
-pygame.quit()
+                if self.cen_move(0,40):
+                    self.stone.y += 40
+
+
+                else:
+                    for x,y in self.stone.stones:
+                        block = pygame.Rect(
+                            self.stone.x + x * 40,
+                            self.stone.y + y * 40,
+                            40,
+                            40
+                        )
+                        self.blocks.append(block)
+                    self.stone = self.create_new_stone()
+
+                self.last_move = current_time
+
+            self.clock.tick(60)
+    
+    
+        pygame.quit()
