@@ -10,11 +10,12 @@ screen = pygame.display.set_mode((600,800))
 bord_width = 400
 bord_height = 600
 border = 20
+paused = False
 
 bord_x = (screen.get_width() - bord_width) // 2
 bord_y = (screen.get_height()- bord_height) // 2
 
-stone = pygame.Rect(bord_x + 200, bord_y, 40, 40)
+stone = pygame.Rect(bord_x + bord_width // 2, bord_y, 40, 40)
 
 def create_new_stone():
     return pygame.Rect(bord_x + 200, bord_y, 40, 40)
@@ -50,6 +51,7 @@ while running:
 
     keys = pygame.key.get_pressed()
 
+
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
@@ -62,31 +64,45 @@ while running:
                 next_pos = stone.move(40,0)
 
                 if not next_pos.colliderect(right)\
-                        and not any(next_pos.colliderect(block) for block in blocks):
+                        and not any(next_pos.colliderect(block) for block in blocks)\
+                        and not paused:
                     stone.x += 40
 
             if event.key == pygame.K_LEFT:
                 next_pos = stone.move(-40,0)
 
                 if not next_pos.colliderect(left)\
-                        and not any(next_pos.colliderect(block) for block in blocks):
+                        and not any(next_pos.colliderect(block) for block in blocks)\
+                    and not paused:
                     stone.x -= 40
 
             if event.key == pygame.K_DOWN:
                 next_pos = stone.move(0, 40)
 
                 if not next_pos.colliderect(bottom)\
-                        and not any(next_pos.colliderect(block) for block in blocks):
+                        and not any(next_pos.colliderect(block) for block in blocks) \
+                        and not paused:
                     stone.y +=40
                     last_move = current_time
 
+            if event.key == pygame.K_SPACE and not paused:
+                blocks.append(stone)
+                stone = create_new_stone()
+                last_move = current_time
+
+            if event.key == pygame.K_p:
+                paused = not paused
+                last_move = current_time - last_move
+
     next_pos = stone.move(0, 40)
-    if current_time - last_move >= 700:
+    if current_time - last_move >= 700 \
+            and not paused:
 
 
         if not next_pos.colliderect(bottom)\
                 and not any(next_pos.colliderect(block) for block in blocks):
             stone.y += 40
+
 
         else:
             blocks.append(stone)
