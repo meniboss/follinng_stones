@@ -11,6 +11,7 @@ class Game:
         pygame.init()
         self.clock = pygame.time.Clock()
         self.last_move = pygame.time.get_ticks()
+        self.font = pygame.font.Font(None,30)
 
         self.screen = pygame.display.set_mode((600, 800))
 
@@ -33,26 +34,31 @@ class Game:
 
         self.running = True
 
+        self.score = 0
+        self.level = 1
+        self.falling_time = 1000
+
+
 
     def create_new_stone(self):
         """shapes = (square, "L" shape, "+" shape, reverse "L" shape,
                zigzag, reverse zigzag, lain, T shape) """
         shapes =[
-            [(-1,0), (-1,1), (0,0), (0,1)],
+            # [(-1,0), (-1,1), (0,0), (0,1)],
 
-            [(-1,-1), (-1,0), (-1,1), (0,1)],
-
-            [(-1,-1), (-1,0), (-1,1), (0,0)],
-
-            [(0,-1), (0,0), (0,1), (-1,1)],
-
-            [(-1,-1), (-1,0), (0,0), (0,1)],
-
-            [(0,-1), (0,0), (-1,0), (-1,1)],
+            # [(-1,-1), (-1,0), (-1,1), (0,1)],
+            #
+            # [(-1,-1), (-1,0), (-1,1), (0,0)],
+            #
+            # [(0,-1), (0,0), (0,1), (-1,1)],
+            #
+            # [(-1,-1), (-1,0), (0,0), (0,1)],
+            #
+            # [(0,-1), (0,0), (-1,0), (-1,1)],
 
             [(-1,-1), (-1,-0), (-1,1), (-1,2)],
 
-            [(-1,-1), (0,-1), (0,0), (0,1), (1,-1)],
+            # [(-1,-1), (0,-1), (0,0), (0,1), (1,-1)],
 
 
 
@@ -86,23 +92,39 @@ class Game:
         return True
 
     def check_lines(self):
+        rows = 0
         for y in range(self.bord_y,self.bord_y + self.bord_height,40):
             row_blocks = [block for block in self.blocks if block.y == y]
 
             if len(row_blocks) == 10:
+                rows +=1
                 for block in row_blocks:
                     self.blocks.remove(block)
 
                 for block in self.blocks:
                     if block.y < y:
                         block.y +=40
+        if rows == 1:
+            self.score += 100
+        elif rows == 2:
+            self.score += 300
+        elif rows == 3:
+            self.score += 500
+        elif rows == 4:
+            self.score += 800
+        if self.blocks == []:
+            self.score += 1000
+
 
 
     def run(self):
         while self.running:
+            self.level = self.score // 1000 + 1
             current_time = pygame.time.get_ticks()
+            keys = pygame.key.get_pressed()
     
             self.screen.fill((30,30,30))
+            self.falling_time = max(100, int(1000 - 70 * (self.level ** 1.1)))
 
             self.stone.draw(self.screen)
             for block in self.blocks:
@@ -112,6 +134,10 @@ class Game:
             pygame.draw.rect(self.screen,(230,230,230),self.bottom)
             pygame.draw.rect(self.screen,(230,230,230),self.left)
             pygame.draw.rect(self.screen,(230,230,230),self.right)
+
+            score_text = self.font.render(f"score{self.score}  level{self.level}",
+              True,(230,230,230))
+            self.screen.blit(score_text,(self.bord_x, self.bord_y + self.bord_height + 40))
     
             pygame.display.flip()
     
@@ -129,11 +155,6 @@ class Game:
                     if event.key == pygame.K_LEFT:
                         if self.cen_move(-40,0) and not self.paused:
                             self.stone.x -= 40
-    
-                    if event.key == pygame.K_DOWN:
-                        if self.cen_move(0,40) and not self.paused:
-                            self.stone.y += 40
-                            self.last_move = current_time
 
                     if event.key == pygame.K_UP:
                         if not self.paused:
@@ -143,7 +164,13 @@ class Game:
                         self.paused = not self.paused
                         self.last_move = current_time - self.last_move
 
-            if current_time - self.last_move >= 700\
+            if keys[pygame.K_DOWN]:
+                if self.cen_move(0,40) and not self.paused:
+                    if current_time - self.last_move >= 100:
+                        self.stone.y += 40
+                        self.last_move = current_time
+
+            if current_time - self.last_move >= self.falling_time\
                     and not self.paused:
 
                 if self.cen_move(0,40) and not self.paused:
