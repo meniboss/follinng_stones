@@ -35,25 +35,27 @@ class Game:
 
 
     def create_new_stone(self):
+        """shapes = (square, "L" shape, "+" shape, reverse "L" shape,
+               zigzag, reverse zigzag, lain, T shape) """
         shapes =[
-            [
-                (-1,0),
-                (-1,1),
-                (0,0),
-                (0,1)
-            ],
-            [
-                (-1,0),
-                (-1,1),
-                (-1,2),
-                (0,2)
-            ],
-            [
-                (-1, 0),
-                (-1, 1),
-                (-1, 2),
-                (0, 1)
-            ]
+            [(-1,0), (-1,1), (0,0), (0,1)],
+
+            [(-1,-1), (-1,0), (-1,1), (0,1)],
+
+            [(-1,-1), (-1,0), (-1,1), (0,0)],
+
+            [(0,-1), (0,0), (0,1), (-1,1)],
+
+            [(-1,-1), (-1,0), (0,0), (0,1)],
+
+            [(0,-1), (0,0), (-1,0), (-1,1)],
+
+            [(-1,-1), (-1,-0), (-1,1), (-1,2)],
+
+            [(-1,-1), (0,-1), (0,0), (0,1), (1,-1)],
+
+
+
         ]
 
 
@@ -62,25 +64,38 @@ class Game:
 
         return Shape(
             self.bord_x + self.bord_width // 2,
-            self.bord_y,
+            self.bord_y - 80,
             blocks
         )
 
-    def cen_move(self,dx,dy):
+    def cen_move(self,dx, dy):
         for x, y in self.stone.stones:
             next_pos = pygame.Rect(
-                self.stone.x + x *  + dx,
+                self.stone.x + x * 40 + dx,
                 self.stone.y + y * 40 + dy,
                 40,
                 40
             )
 
             if (next_pos.colliderect(self.left) or
-                    next_pos.colliderect(self.right) or
-                    next_pos.colliderect(self.bottom) or
-                    any(next_pos.colliderect(block) for block in self.blocks)):
+                next_pos.colliderect(self.right) or
+                next_pos.colliderect(self.bottom) or
+                any(next_pos.colliderect(block) for block in self.blocks)):
+
                 return False
         return True
+
+    def check_lines(self):
+        for y in range(self.bord_y,self.bord_y + self.bord_height,40):
+            row_blocks = [block for block in self.blocks if block.y == y]
+
+            if len(row_blocks) == 10:
+                for block in row_blocks:
+                    self.blocks.remove(block)
+
+                for block in self.blocks:
+                    if block.y < y:
+                        block.y +=40
 
 
     def run(self):
@@ -119,7 +134,11 @@ class Game:
                         if self.cen_move(0,40) and not self.paused:
                             self.stone.y += 40
                             self.last_move = current_time
-    
+
+                    if event.key == pygame.K_UP:
+                        if not self.paused:
+                            self.stone.rotate(self.left,self.right,self.bottom,self.blocks)
+
                     if event.key == pygame.K_p:
                         self.paused = not self.paused
                         self.last_move = current_time - self.last_move
@@ -127,7 +146,7 @@ class Game:
             if current_time - self.last_move >= 700\
                     and not self.paused:
 
-                if self.cen_move(0,40):
+                if self.cen_move(0,40) and not self.paused:
                     self.stone.y += 40
 
                 else:
@@ -139,6 +158,7 @@ class Game:
                             40
                         )
                         self.blocks.append(block)
+                    self.check_lines()
                     self.stone = self.create_new_stone()
 
                 self.last_move = current_time
