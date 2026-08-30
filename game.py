@@ -42,8 +42,8 @@ class Game:
 
     @property
     def create_new_stone(self):
-        """shapes = (square, "L" shape, "+" shape, reverse "L" shape,
-               zigzag, reverse zigzag, lain, T shape, U shape, v shape) """
+        """shapes = (square, "L" , "+" , reverse "L" ,zigzag,
+        reverse zigzag, lain, "T" , "U" , "v", "bowl", gan, revers gan) """
         shapes = [
             [(-1, 0), (-1, 1), (0, 0), (0, 1)],
 
@@ -63,7 +63,13 @@ class Game:
 
             [(-1, -1), (0, -1), (-1, 0), (-1, 1), (0, 1)],
 
-            [(-1, 0), (0, 0), (-1, 1)]
+            [(-1, 0), (0, 0), (-1, 1)],
+
+            [(-1, -1), (0, 0), (-1, 1)],
+
+            [(-1, -1), (0, 0), (0, 1)],
+
+            [(0, -1), (-1, 0), (-1, 1)]
         ]
 
         blocks = random.choice(shapes)
@@ -135,7 +141,7 @@ class Game:
             keys = pygame.key.get_pressed()
 
             self.screen.fill((30, 30, 30))
-            self.falling_time = max(100, int(1000 - 70 * (self.level ** 1.1)))
+            self.falling_time = max(70, 1000 - self.level *100)
 
             self.stone.draw(self.screen)
             self.next_stone.draw_next_stone(self.screen)
