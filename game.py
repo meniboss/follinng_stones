@@ -8,13 +8,12 @@ class Game:
 
     stone: Shape
 
-    def __init__(self):
+    def __init__(self,screen):
         pygame.init()
         self.clock = pygame.time.Clock()
         self.last_move = pygame.time.get_ticks()
         self.font = pygame.font.Font(None, 30)
-
-        self.screen = pygame.display.set_mode((1000, 800))
+        self.screen = screen
 
         self.bord_width = 400
         self.bord_height = 600
@@ -43,7 +42,7 @@ class Game:
     @property
     def create_new_stone(self):
         """shapes = (square, "L" , "+" , reverse "L" ,zigzag,
-        reverse zigzag, lain, "T" , "U" , "v", "bowl", gan, revers gan) """
+        reverse zigzag, lain, "T" , "U" , "i", short line, "v", "bowl", gan, revers gan) """
         shapes = [
             [(-1, 0), (-1, 1), (0, 0), (0, 1)],
 
@@ -62,6 +61,10 @@ class Game:
             [(-1, -1), (0, -1), (0, 0), (0, 1), (1, -1)],
 
             [(-1, -1), (0, -1), (-1, 0), (-1, 1), (0, 1)],
+
+            [(-1, -1), (-1, 1), (-1, 2)],
+
+            [(-1, -1), (-1, 0), (-1, 1)],
 
             [(-1, 0), (0, 0), (-1, 1)],
 
@@ -132,8 +135,6 @@ class Game:
                 return True
         return None
 
-
-
     def run(self):
         while self.running:
             self.level = self.score // 1000 + 1
@@ -199,7 +200,7 @@ class Game:
 
                 else:
                     if self.game_over():
-                        self.running = False
+                        return "game over"
                     for x, y in self.stone.stones:
                         block = pygame.Rect(
                             self.stone.x + x * 40,
