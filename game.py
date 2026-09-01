@@ -42,7 +42,7 @@ class Game:
         self.level = 1
         self.falling_time = 1000
 
-        self.stone_image = pygame.image.load("stone.png").convert_alpha()
+        self.stone_image = pygame.image.load("stone.png").convert()
         self.stone_image = pygame.transform.scale(self.stone_image, (40,40))
 
     @property

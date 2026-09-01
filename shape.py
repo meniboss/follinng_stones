@@ -6,7 +6,7 @@ class Shape:
         self.x = x
         self.y = y
         self.stones = stones
-        self.stone_image = pygame.image.load("stone.png").convert_alpha()
+        self.stone_image = pygame.image.load("stone.png").convert()
         self.stone_image = pygame.transform.scale(self.stone_image, (40,40))
         self.small_stone_image = pygame.transform.scale(self.stone_image, (25,25))
 
