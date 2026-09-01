@@ -1,6 +1,7 @@
 import random
 import pygame
 from pygame.constants import KEYDOWN
+from highscores import HighScores
 from shape import Shape
 
 
@@ -8,12 +9,14 @@ class Game:
 
     stone: Shape
 
-    def __init__(self,screen):
+    def __init__(self,screen, username, hi_scores):
         pygame.init()
         self.clock = pygame.time.Clock()
         self.last_move = pygame.time.get_ticks()
         self.font = pygame.font.Font(None, 30)
         self.screen = screen
+        self.username = username
+        self.hi_scores = hi_scores
 
         self.bord_width = 400
         self.bord_height = 600
@@ -200,6 +203,7 @@ class Game:
 
                 else:
                     if self.game_over():
+                        self.hi_scores.add_score(self.username,self.score)
                         return "game over"
                     for x, y in self.stone.stones:
                         block = pygame.Rect(

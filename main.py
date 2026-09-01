@@ -1,5 +1,6 @@
 from game import Game
 from menu import Menu
+from highscores import HighScores
 import pygame
 
 
@@ -8,13 +9,16 @@ def main():
 
     screen = pygame.display.set_mode((1000, 800))
 
-    menu = Menu(screen)
+
+    hi_scores = HighScores()
+    menu = Menu(screen,hi_scores)
+
     running = True
     while running:
-        result = menu.run()
+        result,username = menu.run()
 
         if result == "play":
-            game = Game(screen)
+            game = Game(screen, username, hi_scores)
             game_result = game.run()
 
             if game_result == "game over":
