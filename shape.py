@@ -6,12 +6,14 @@ class Shape:
         self.x = x
         self.y = y
         self.stones = stones
+        self.stone_image = pygame.image.load("stone.png").convert_alpha()
+        self.stone_image = pygame.transform.scale(self.stone_image, (40,40))
+        self.small_stone_image = pygame.transform.scale(self.stone_image, (25,25))
 
     def draw(self, screen):
         for x, y in self.stones:
-            pygame.draw.rect(
-                screen,
-                (200, 200, 200),
+            screen.blit(
+                self.stone_image,
                 pygame.Rect(
                     self.x + x * 40,
                     self.y + y * 40,
@@ -22,9 +24,7 @@ class Shape:
 
     def draw_next_stone(self, screen):
         for x, y in self.stones:
-            pygame.draw.rect(
-                screen,
-                (200, 200, 200),
+            screen.blit(self.small_stone_image,
                 pygame.Rect(
                     self.x -340 + x * 25,
                     self.y + 220 + y * 25,

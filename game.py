@@ -42,6 +42,9 @@ class Game:
         self.level = 1
         self.falling_time = 1000
 
+        self.stone_image = pygame.image.load("stone.png").convert_alpha()
+        self.stone_image = pygame.transform.scale(self.stone_image, (40,40))
+
     @property
     def create_new_stone(self):
         """shapes = (square, "L" , "+" , reverse "L" ,zigzag,
@@ -150,7 +153,7 @@ class Game:
             self.stone.draw(self.screen)
             self.next_stone.draw_next_stone(self.screen)
             for block in self.blocks:
-                pygame.draw.rect(self.screen, (200, 200, 200), block)
+                self.screen.blit(self.stone_image, block)
 
             pygame.draw.rect(self.screen, (230, 230, 230), self.top)
             pygame.draw.rect(self.screen, (230, 230, 230), self.bottom)
