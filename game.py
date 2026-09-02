@@ -9,14 +9,13 @@ class Game:
 
     stone: Shape
 
-    def __init__(self,screen, username, hi_scores):
+    def __init__(self,screen, username, selected_texture):
         pygame.init()
         self.clock = pygame.time.Clock()
         self.last_move = pygame.time.get_ticks()
         self.font = pygame.font.Font(None, 30)
         self.screen = screen
         self.username = username
-        self.hi_scores = hi_scores
 
         self.bord_width = 400
         self.bord_height = 600
@@ -33,6 +32,8 @@ class Game:
         self.right = pygame.Rect(self.bord_x + self.bord_width, self.bord_y, self.border, self.bord_height)
 
         self.blocks = []
+
+        self.selected_texture = selected_texture
         self.stone = self.create_new_stone
         self.next_stone = self.create_new_stone
 
@@ -42,8 +43,8 @@ class Game:
         self.level = 1
         self.falling_time = 1000
 
-        self.stone_image = pygame.image.load("stone.png").convert()
-        self.stone_image = pygame.transform.scale(self.stone_image, (40,40))
+        self.stone_image = pygame.image.load(self.selected_texture).convert()
+
 
     @property
     def create_new_stone(self):
@@ -86,7 +87,7 @@ class Game:
         return Shape(
             self.bord_x + self.bord_width // 2,
             self.bord_y - 80,
-            blocks
+            blocks, self.selected_texture
         )
 
     def cen_move(self, dx, dy):
@@ -141,7 +142,7 @@ class Game:
                 return True
         return None
 
-    def run(self):
+    def run(self,hi_scores):
         while self.running:
             self.level = self.score // 1000 + 1
             current_time = pygame.time.get_ticks()
@@ -207,7 +208,7 @@ class Game:
 
                 else:
                     if self.game_over():
-                        self.hi_scores.add_score(self.username,self.score)
+                        hi_scores.add_score(self.username,self.score)
                         return "game over"
                     for x, y in self.stone.stones:
                         block = pygame.Rect(

@@ -2,13 +2,13 @@ import pygame
 
 
 class Shape:
-    def __init__(self, x, y, stones):
+    def __init__(self, x, y, stones,selected_texture):
         self.x = x
         self.y = y
         self.stones = stones
-        self.stone_image = pygame.image.load("stone.png").convert()
-        self.stone_image = pygame.transform.scale(self.stone_image, (40,40))
-        self.small_stone_image = pygame.transform.scale(self.stone_image, (25,25))
+        self.selected_texture = selected_texture
+        self.stone_image = pygame.image.load(self.selected_texture).convert()
+        self.small_stone_image = pygame.transform.scale(self.stone_image, (25, 25))
 
     def draw(self, screen):
         for x, y in self.stones:
