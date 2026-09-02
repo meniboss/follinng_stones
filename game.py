@@ -160,12 +160,13 @@ class Game:
             pygame.draw.rect(self.screen, (230, 230, 230), self.left)
             pygame.draw.rect(self.screen, (230, 230, 230), self.right)
 
-            score_text = self.font.render(f"score{self.score}  level{self.level}",
-                                          True, (230, 230, 230))
+            score_text = self.font.render(f"score{self.score}  level{self.level}",  True, (230, 230, 230))
             next_stone_text = self.font.render("next stone:",True, (230, 230, 230))
+            username_text = self.font.render(f"player: {self.username}", True, (230, 230, 230))
 
             self.screen.blit(score_text, (self.bord_x, self.bord_y + self.bord_height + 40))
             self.screen.blit(next_stone_text, (self.bord_x -200, self.bord_y + 80))
+            self.screen.blit(username_text, (self.bord_x -200, self.bord_y + 260))
 
             pygame.display.flip()
 
@@ -225,3 +226,4 @@ class Game:
             self.clock.tick(60)
 
         pygame.quit()
+        return None

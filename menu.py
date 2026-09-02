@@ -9,13 +9,22 @@ class Menu:
         self.running = True
         self.play_button = pygame.Rect(self.screen.get_width() // 2 - 50,
             self.screen.get_height() // 2 -100, 120, 60)
+        self.clock = pygame.time.Clock()
 
         self.font = pygame.font.Font(None, 60)
         self.small_font = pygame.font.Font(None, 30)
         self.username = ""
-        self.start = False
         self.hi_scores = hi_scores
         self.score_text = ""
+
+    def get_user_name(self,key, unicode):
+        if key == pygame.K_BACKSPACE:
+            self.username = self.username[:-1]
+            return None
+
+        else:
+            self.username += unicode
+            return None
 
     def run(self):
         self.hi_scores.lode()
@@ -24,24 +33,28 @@ class Menu:
             self.score_text += f"{score["username"]}: {score["score"]}\n"
 
         while self.running:
-
             self.screen.fill((30, 30, 30))
+
             y = 500
             for line in self.score_text.splitlines():
                 scores_text = self.small_font.render(line,
-                                        True, (200, 100, 100), )
+                                        True, (100, 200, 100), )
                 self.screen.blit(scores_text, (100, y))
                 y += 30
-            if self.start:
-                text = self.font.render(f"username:{self.username}",
-                            True, (200,100,100),)
-                self.screen.blit(text, (200, 450))
 
+            username_text = self.font.render(f"username:{self.username}",True, (200,100,100),)
+            play_text = self.font.render("play", True, (100, 100, 200))
+            rect_text = play_text.get_rect(center=self.play_button.center)
+
+            self.screen.blit(username_text, (200, 450))
             pygame.draw.rect(
                 self.screen,
             (230, 230 ,230),
                 self.play_button
             )
+            self.screen.blit(play_text, rect_text)
+
+
 
             pygame.display.flip()
 
@@ -51,19 +64,9 @@ class Menu:
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.play_button.collidepoint(event.pos):
-                        # return "play", self.username
-                        self.start = True
-
+                        return "play",self.username
                 if event.type == pygame.KEYDOWN:
-                    if self.start:
-                        if event.key == pygame.K_RETURN:
-                            return "play", self.username
-
-                        elif event.key == pygame.K_BACKSPACE:
-                            self.username = self.username[:-1]
-
-                        else:
-                            self.username += event.unicode
+                    self.get_user_name(event.key, event.unicode)
         return None
 
 
