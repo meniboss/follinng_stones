@@ -46,8 +46,8 @@ class Menu:
                 self.screen.blit(scores_text, (100, y))
                 y += 30
 
-            username_text = self.font.render(f"username:{self.username}",True, (200,100,100),)
-            play_text = self.font.render("play", True, (100, 100, 200))
+            username_text = self.font.render(f"Username:{self.username}",True, (200,100,100),)
+            play_text = self.font.render("Play", True, (100, 100, 200))
             rect_text = play_text.get_rect(center=self.play_button.center)
 
             setting_text = self.font.render("setting", True, (100, 100, 200))

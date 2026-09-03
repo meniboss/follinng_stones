@@ -44,7 +44,7 @@ class Settings:
 
         while self.running:
             self.screen.fill((30, 30, 30))
-            return_text = self.font.render("return", True, (100, 100, 200))
+            return_text = self.font.render("Return", True, (100, 100, 200))
             rect_text = return_text.get_rect(center=self.return_button.center)
 
             stone_image = pygame.image.load(self.selected_texture).convert()

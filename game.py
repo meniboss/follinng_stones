@@ -40,8 +40,11 @@ class Game:
         self.running = True
 
         self.score = 0
+        self.special_score = 0
         self.level = 1
         self.falling_time = 1000
+        self.special_move_check = False
+        self.special_moves = 0
 
         self.stone_image = pygame.image.load(self.selected_texture).convert()
 
@@ -49,7 +52,7 @@ class Game:
     @property
     def create_new_stone(self):
         """shapes = (square, "L" , "+" , reverse "L" ,zigzag,
-        reverse zigzag, lain, "T" , "U" , "i", short line, "v", "bowl", gan, revers gan) """
+        reverse zigzag, lain, "T" , "U" , ":", short line, "v", "bowl", gan, revers gan) """
         shapes = [
             [(-1, 0), (-1, 1), (0, 0), (0, 1)],
 
@@ -69,7 +72,7 @@ class Game:
 
             [(-1, -1), (0, -1), (-1, 0), (-1, 1), (0, 1)],
 
-            [(-1, -1), (-1, 1), (-1, 2)],
+            [(-1, -1), (-1, 1)],
 
             [(-1, -1), (-1, 0), (-1, 1)],
 
@@ -121,14 +124,33 @@ class Game:
                         block.y += 40
         if rows == 1:
             self.score += 100
+            self.special_score += 100
         elif rows == 2:
             self.score += 350
+            self.special_score += 350
         elif rows == 3:
             self.score += 600
+            self.special_score += 600
         elif rows == 4:
             self.score += 950
+            self.special_score += 950
         if not self.blocks:
             self.score += 1200
+            self.special_score += 1200
+
+    def special_move(self):
+        for x, y in self.stone.stones:
+            x = self.stone.x + x * 40
+            y = self.stone.y + y * 40
+            for block in self.blocks:
+                if (
+                    block.x == x and block.y == y or
+                    block.x == x + 40 and block.y == y or
+                    block.x == x - 40 and block.y == y or
+                    block.x == x and block.y == y + 40 or
+                    block.x == x and block.y == y + 40
+                ):
+                    self.blocks.remove(block)
 
     def game_over(self):
         for x, y in self.stone.stones:
@@ -145,11 +167,12 @@ class Game:
     def run(self,hi_scores):
         while self.running:
             self.level = self.score // 1000 + 1
+            self.falling_time = max(70, 1000 - self.level *100)
+
             current_time = pygame.time.get_ticks()
             keys = pygame.key.get_pressed()
 
             self.screen.fill((30, 30, 30))
-            self.falling_time = max(70, 1000 - self.level *100)
 
             self.stone.draw(self.screen)
             self.next_stone.draw_next_stone(self.screen)
@@ -161,7 +184,7 @@ class Game:
             pygame.draw.rect(self.screen, (230, 230, 230), self.left)
             pygame.draw.rect(self.screen, (230, 230, 230), self.right)
 
-            score_text = self.font.render(f"score{self.score}  level{self.level}",  True, (230, 230, 230))
+            score_text = self.font.render(f"Score:{self.score}  Level:{self.level}  Special moves:{self.special_moves}",  True, (230, 230, 230))
             next_stone_text = self.font.render("next stone:",True, (230, 230, 230))
             username_text = self.font.render(f"player: {self.username}", True, (230, 230, 230))
 
@@ -190,6 +213,11 @@ class Game:
                         if not self.paused:
                             self.stone.rotate(self.left, self.right, self.bottom, self.blocks)
 
+                    if event.key == pygame.K_SPACE:
+                        if not self.special_move_check and self.special_moves > 0 and not self.paused:
+                            self.special_moves -= 1
+                            self.special_move_check = True
+
                     if event.key == pygame.K_p:
                         self.paused = not self.paused
                         self.last_move = current_time - self.last_move
@@ -209,7 +237,9 @@ class Game:
                 else:
                     if self.game_over():
                         hi_scores.add_score(self.username,self.score)
-                        return
+                        return None
+
+
                     for x, y in self.stone.stones:
                         block = pygame.Rect(
                             self.stone.x + x * 40,
@@ -219,6 +249,16 @@ class Game:
                         )
                         self.blocks.append(block)
                     self.check_lines()
+                    if self.special_score > 500:
+                        remainder = self.special_score % 500
+                        self.special_score //= 500
+                        self.special_moves += self.special_score
+                        self.special_score = remainder
+
+                    if self.special_move_check:
+                        self.special_move()
+                        self.special_move_check = False
+
                     self.stone = self.next_stone
                     self.next_stone = self.create_new_stone
 
