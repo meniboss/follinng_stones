@@ -174,7 +174,7 @@ class Game:
             for event in pygame.event.get():
 
                 if event.type == pygame.QUIT:
-                    self.running = False
+                    return "quit"
 
                 if event.type == KEYDOWN:
 
@@ -209,7 +209,7 @@ class Game:
                 else:
                     if self.game_over():
                         hi_scores.add_score(self.username,self.score)
-                        return "game over"
+                        return
                     for x, y in self.stone.stones:
                         block = pygame.Rect(
                             self.stone.x + x * 40,

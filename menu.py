@@ -2,7 +2,7 @@ import pygame
 
 class Menu:
 
-    def __init__(self, screen, selected_texture):
+    def __init__(self, screen, selected_texture, username):
         self.screen = screen
         self.running = True
         self.play_button = pygame.Rect(self.screen.get_width() // 2 - 50,
@@ -15,7 +15,7 @@ class Menu:
 
         self.font = pygame.font.Font(None, 60)
         self.small_font = pygame.font.Font(None, 30)
-        self.username = ""
+        self.username = username
         self.score_text = ""
         self.selected_texture = selected_texture
         self.stone_image = pygame.image.load(self.selected_texture).convert()
@@ -73,7 +73,7 @@ class Menu:
                     if self.play_button.collidepoint(event.pos):
                         return "play",self.username
                     elif self.setting_button.collidepoint(event.pos):
-                        return "setting",None
+                        return "setting",self.username
 
                 if event.type == pygame.KEYDOWN:
                     self.get_user_name(event.key, event.unicode)

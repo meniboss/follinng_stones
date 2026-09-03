@@ -11,29 +11,30 @@ def main():
     screen = pygame.display.set_mode((1000, 800))
     settings = Settings(screen)
     selected_texture = settings.selected_texture
-
+    username = ""
     hi_scores = HighScores()
 
 
 
     running = True
     while running:
-        menu = Menu(screen, selected_texture)
+        menu = Menu(screen, selected_texture,username)
         result,username = menu.run(hi_scores)
 
         if result == "setting":
-            result, new_texture = settings.run()
+            settings_result, new_texture = settings.run()
 
-            if result == "yes":
+            if settings_result == "yes":
                 selected_texture = new_texture
-                menu.run(hi_scores)
 
         elif result == "play":
             game = Game(screen, username,selected_texture)
-            result = game.run(hi_scores)
 
-            if result == "game over":
-                menu.run(hi_scores)
+            game_result = game.run(hi_scores)
+
+            pygame.mixer.music.stop()
+            if game_result == "quit":
+                running = False
 
 
 

@@ -63,10 +63,8 @@ class Settings:
                     for i, frame in enumerate(self.frames):
                         if frame.collidepoint(event.pos):
                             self.selected_texture = self.stone_pngs[i]
-                            print(self.selected_texture)
 
                     if self.return_button.collidepoint(event.pos):
-                        print(self.selected_texture)
                         return "yes", self.selected_texture
 
 
