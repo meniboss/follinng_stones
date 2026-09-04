@@ -5,16 +5,21 @@ class Menu:
     def __init__(self, screen, selected_texture, username):
         self.screen = screen
         self.running = True
+
         self.play_button = pygame.Rect(self.screen.get_width() // 2 - 50,
-            self.screen.get_height() // 2 -100, 200, 60)
+            self.screen.get_height() // 2 - 100, 200, 60)
 
         self.setting_button = pygame.Rect(self.screen.get_width() // 2 - 50,
-            self.screen.get_height() // 2 -180, 200, 60)
+            self.screen.get_height() // 2 - 180, 200, 60)
+
+        self.quit_button = pygame.Rect(self.screen.get_width() // 2 - 50,
+            self.screen.get_height() // 2 - 20, 200, 60)
 
         self.clock = pygame.time.Clock()
 
         self.font = pygame.font.Font(None, 60)
         self.small_font = pygame.font.Font(None, 30)
+        self.big_font = pygame.font.Font(None, 100)
         self.username = username
         self.score_text = ""
         self.selected_texture = selected_texture
@@ -47,21 +52,25 @@ class Menu:
                 y += 30
 
             username_text = self.font.render(f"Username:{self.username}",True, (200,100,100),)
+            self.screen.blit(username_text, (200, 450))
+
             play_text = self.font.render("Play", True, (100, 100, 200))
             rect_text = play_text.get_rect(center=self.play_button.center)
+            self.screen.blit(self.butten_image, self.play_button)
+            self.screen.blit(play_text, rect_text)
 
             setting_text = self.font.render("setting", True, (100, 100, 200))
             rect_st_text = setting_text.get_rect(center=self.setting_button.center)
-
-            self.screen.blit(username_text, (200, 450))
-
-            self.screen.blit(self.butten_image, self.play_button)
             self.screen.blit(self.butten_image, self.setting_button)
-
-            self.screen.blit(play_text, rect_text)
             self.screen.blit(setting_text, rect_st_text)
 
+            quit_text = self.font.render("Quit", True, (100, 100, 200))
+            rect_quit_text = quit_text.get_rect(center=self.quit_button.center)
+            self.screen.blit(self.butten_image, self.quit_button)
+            self.screen.blit(quit_text, rect_quit_text)
 
+            game_text = self.big_font.render(f"Falling stones",True, (255,115,0),)
+            self.screen.blit(game_text,(300,100))
 
             pygame.display.flip()
 
@@ -72,8 +81,12 @@ class Menu:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.play_button.collidepoint(event.pos):
                         return "play",self.username
+
                     elif self.setting_button.collidepoint(event.pos):
                         return "setting",self.username
+
+                    elif self.quit_button.collidepoint(event.pos):
+                        return "quit",None
 
                 if event.type == pygame.KEYDOWN:
                     self.get_user_name(event.key, event.unicode)

@@ -139,18 +139,16 @@ class Game:
             self.special_score += 1200
 
     def special_move(self):
-        for x, y in self.stone.stones:
-            x = self.stone.x + x * 40
-            y = self.stone.y + y * 40
-            for block in self.blocks:
-                if (
-                    block.x == x and block.y == y or
-                    block.x == x + 40 and block.y == y or
-                    block.x == x - 40 and block.y == y or
-                    block.x == x and block.y == y + 40 or
-                    block.x == x and block.y == y + 40
-                ):
-                    self.blocks.remove(block)
+        for i in range(-40, 41, 40):
+            for a in range(-40, 41, 40):
+
+                for x, y in self.stone.stones:
+                    x = self.stone.x + x * 40
+                    y = self.stone.y + y * 40
+
+                    for block in self.blocks:
+                        if block.x == x + i and block.y == y + a :
+                            self.blocks.remove(block)
 
     def game_over(self):
         for x, y in self.stone.stones:
@@ -167,7 +165,7 @@ class Game:
     def run(self,hi_scores):
         while self.running:
             self.level = self.score // 1000 + 1
-            self.falling_time = max(70, 1000 - self.level *100)
+            self.falling_time = max(100, int(1170 - self.level ** 0.70 * 170))
 
             current_time = pygame.time.get_ticks()
             keys = pygame.key.get_pressed()
@@ -249,10 +247,10 @@ class Game:
                         )
                         self.blocks.append(block)
                     self.check_lines()
-                    if self.special_score > 500:
+                    if self.special_score >= 500:
                         remainder = self.special_score % 500
-                        self.special_score //= 500
-                        self.special_moves += self.special_score
+                        self.special_moves += self.special_score // 500
+                        self.special_moves = min(5, self.special_moves)
                         self.special_score = remainder
 
                     if self.special_move_check:

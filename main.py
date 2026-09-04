@@ -9,6 +9,7 @@ def main():
     pygame.init()
 
     screen = pygame.display.set_mode((1000, 800))
+    pygame.display.set_caption("Falling stones 🕹️")
     settings = Settings(screen)
     selected_texture = settings.selected_texture
     username = ""

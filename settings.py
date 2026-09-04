@@ -22,6 +22,7 @@ class Settings:
             "textures/moss.png",
             "textures/stone.png",
             "textures/wood.png",
+            "textures/simple.png"
         ]
         self.selected_texture = "textures/brick.png"
         self.creat_frames()
